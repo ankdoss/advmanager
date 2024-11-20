@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Campaign Setup</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input[type="number"] {
+            width: auto;
+        }
+
+        input[type="file"] {
+            border: none;
+            padding: 10px 0;
+        }
+
+        footer {
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+        }
+
+        .image-preview img {
+            margin-right: 10px;
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .ad-set-section {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+
+        .ad-set {
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .remove-ad-set {
+            cursor: pointer;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .creative {
+            margin-bottom: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <h1>Ad Campaign Setup</h1>
+    </header>
+
+    <!-- Campaign Info Section -->
+    <section class="form-section">
+        <h2>Campaign Information</h2>
+        <label for="campaign-name">Campaign Name</label>
+        <input type="text" id="campaign-name" placeholder="Enter campaign name">
+
+        <label for="campaign-goal">Campaign Goal</label>
+        <select id="campaign-goal">
+            <option>Sales</option>
+            <option>Leads</option>
+            <option>Website Traffic</option>
+            <option>Brand Awareness</option>
+            <option>Engagement</option>
+        </select>
+
+        <label for="start-date">Start Date</label>
+        <input type="date" id="start-date">
+
+        <label for="end-date">End Date</label>
+        <input type="date" id="end-date">
+
+        <label for="budget-type">Budget Type</label>
+        <select id="budget-type">
+            <option>Daily Budget</option>
+            <option>Lifetime Budget</option>
+        </select>
+
+        <label for="total-budget">Total Budget</label>
+        <input type="number" id="total-budget" placeholder="Enter total budget" min="1">
+
+        <label for="country">Country</label>
+        <input type="text" id="country" placeholder="Select country">
+
+        <label for="ad-schedule">Ad Schedule</label>
+        <input type="text" id="ad-schedule" placeholder="Select days and times">
+    </section>
+
+    <!-- Ad Sets Section -->
+    <section class="ad-set-section">
+        <h2>Ad Sets</h2>
+        <div id="ad-sets-container"></div>
+        <button id="add-ad-set">Add New Ad Set</button>
+    </section>
+
+    <!-- Submit Section -->
+    <footer class="form-section">
+        <button id="submit">Save & Submit</button>
+    </footer>
+</div>
+
+<script>
+    const adSetsContainer = document.getElementById("ad-sets-container");
+    const addAdSetButton = document.getElementById("add-ad-set");
+    const submitButton = document.getElementById("submit");
+
+    // Standard ad sizes
+    const standardAdSizes = [
+        { width: '1080', height: '1080', name: 'Square' },
+        { width: '1200', height: '628', name: 'Landscape' },
+        { width: '1080', height: '1920', name: 'Vertical' },
+        { width: '300', height: '250', name: 'Medium Rectangle' },
+        { width: '728', height: '90', name: 'Leaderboard' },
+        { width: '160', height: '600', name: 'Wide Skyscraper' },
+    ];
+
+    // Function to add a new Ad Set
+    function addAdSet() {
+        const adSetId = `ad-set-${Date.now()}`;
+        const adSetDiv = document.createElement("div");
+        adSetDiv.classList.add("ad-set");
+        adSetDiv.id = adSetId;
+
+        adSetDiv.innerHTML = `
+            <h3>Ad Set</h3>
+            <label for="ad-set-name-${adSetId}">Ad Set Name</label>
+            <input type="text" id="ad-set-name-${adSetId}" placeholder="Enter ad set name">
+
+            <label for="target-audience-${adSetId}">Target Audience</label>
+            <input type="text" id="target-audience-${adSetId}" placeholder="Enter target audience">
+
+            <label for="ad-placement-${adSetId}">Ad Placement</label>
+            <select id="ad-placement-${adSetId}">
+                <option>Home Hero Carousal</option>
+                <option>Home Hero Carousal</option>
+                <option>Home Page</option>
+                <option>Social Page</option>
+                <option>Search</option>
+            </select>
+
+            <label for="bid-strategy-${adSetId}">Bid Strategy</label>
+            <select id="bid-strategy-${adSetId}">
+                <option>Target CPA</option>
+                <option>Target ROAS</option>
+                <option>Manual CPC</option>
+            </select>
+
+            <!-- Budget -->
+            <label for="ad-set-budget-${adSetId}">Ad Set Budget</label>
+            <input type="number" id="ad-set-budget-${adSetId}" placeholder="Enter ad set budget" min="1">
+
+            <!-- Ad Creatives Section -->
+            <div class="creative">
+                <label for="image-upload-${adSetId}">Ad Images</label>
+                <input type="file" id="image-upload-${adSetId}" accept="image/*" multiple>
+
+                <label for="image-dimensions-${adSetId}">Image Dimensions</label>
+                <select id="image-dimensions-${adSetId}">
+                    ${standardAdSizes.map(size => `<option value="${size.width}x${size.height}">${size.name} (${size.width}x${size.height})</option>`).join('')}
+                </select>
+
+                <label for="alt-text-${adSetId}">Image Alt Text</label>
+                <input type="text" id="alt-text-${adSetId}" placeholder="Enter image alt text">
+
+                <label for="creative-weightage-${adSetId}">Creative Weightage</label>
+                <input type="number" id="creative-weightage-${adSetId}" placeholder="Enter weightage" min="1" max="100">
+
+                <div id="image-preview-${adSetId}" class="image-preview"></div>
+            </div>
+
+            <label for="tracking-url-${adSetId}">Redirection URL</label>
+            <input type="url" id="tracking-url-${adSetId}" placeholder="Enter URL">
+
+            <label for="tracking-params-${adSetId}">Tracking Parameters</label>
+            <input type="text" id="tracking-params-${adSetId}" placeholder="e.g., utm_source=facebook">
+            
+            <button class="remove-ad-set" onclick="removeAdSet('${adSetId}')">Remove Ad Set</button>
+        `;
+        adSetsContainer.appendChild(adSetDiv);
+
+        // Add image preview functionality
+        document.getElementById(`image-upload-${adSetId}`).addEventListener('change', function (event) {
+            const previewContainer = document.getElementById(`image-preview-${adSetId}`);
+            previewContainer.innerHTML = '';
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(files[i]);
+                img.style.maxWidth = '100px';
+                previewContainer.appendChild(img);
+            }
+        });
+    }
+
+    // Function to remove an ad set
+    function removeAdSet(adSetId) {
+        const adSetDiv = document.getElementById(adSetId);
+        adSetsContainer.removeChild(adSetDiv);
+    }
+
+    // Add initial ad set
+    addAdSetButton.addEventListener('click', addAdSet);
+
+    // Handle form submission
+    submitButton.addEventListener('click', function() {
+        alert('Campaign Submitted');
+    });
+</script>
+
+</body>
+</html>
